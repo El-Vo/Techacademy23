@@ -5,13 +5,14 @@ export default function ExerciseTable() {
     const [tableEntries, setTableEntries] = useState([]);
 
    function addNewEntry() {
+       let currentDate = new Date().toISOString().slice(0, 10);
        fetch("http://localhost:5000/activities", {
            method: "POST",
            body: JSON.stringify({
                activity:'Aktivität',
                duration:'00:00:00',
                comment:'',
-               date:'1970-01-01'
+               date:currentDate
            }),
            headers: {
                "Content-type": "application/json; charset=UTF-8"
@@ -23,14 +24,14 @@ export default function ExerciseTable() {
     function displayCurrentEntries() {
         let entryArray = [];
 
-        //Load existing exercise entries from the database. If none are found, an empty entry is generated.
+        //Load existing exercise entries from the database. If none are found, the table remains empty.
         fetch('http://localhost:5000/activities')
             .then(response => response.json())
             .then(activityArray => {
                 if (activityArray.length) {
                     for (let activity of activityArray) {
                         console.log(activity);
-                        entryArray = [...entryArray,  <ExerciseEntry key={entryArray.length} activity={activity} />];
+                        entryArray = [...entryArray,  <ExerciseEntry key={activity.id} activity={activity} setTableEntries={displayCurrentEntries} />];
                     }
                     setTableEntries(entryArray);
                 } else {
@@ -39,10 +40,6 @@ export default function ExerciseTable() {
 
             })
             .catch(error => console.error('Error:', error));
-   }
-
-   function deleteExistingEntry() {
-       setTableEntries(<ExerciseEntry/>);
    }
 
     useEffect(() => {
@@ -72,7 +69,7 @@ export default function ExerciseTable() {
             {tableEntries}
             <div className='row spacer'>
                 <div className='col-12'>
-                    <Button variant="secondary" onClick={deleteExistingEntry}>Neuen Eintrag hinzufügen</Button>
+                    <Button variant="secondary" onClick={addNewEntry}>Neuen Eintrag hinzufügen</Button>
                 </div>
             </div>
         </div>

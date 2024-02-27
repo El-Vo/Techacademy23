@@ -1,11 +1,12 @@
 from flask import Flask, jsonify, request
-from flask_cors import CORS
+from flask_cors import CORS, cross_origin
 import psycopg2
 import psycopg2.extras
 from datetime import datetime, time
 
 app = Flask(__name__)
 CORS(app)
+app.config['CORS_HEADERS'] = 'Content-Type'
 
 # Establish a connection to the PostgreSQL database
 conn = psycopg2.connect(
@@ -18,6 +19,7 @@ conn = psycopg2.connect(
 
 ##### GET
 @app.route('/activities/<int:id>', methods=['GET'])
+@cross_origin()
 def get_activity_by_id(id):
     cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
     cur.execute("SELECT * FROM activities WHERE ID = %s", (id,))
@@ -30,6 +32,7 @@ def get_activity_by_id(id):
         return jsonify({"error": "Activity not found"}), 404
 
 @app.route('/activities/<string:date>', methods=['GET'])
+@cross_origin()
 def get_activity_by_date(date):
 
     date_obj = datetime.strptime(date, '%Y-%m-%d').date()
@@ -50,6 +53,7 @@ def get_activity_by_date(date):
     return jsonify([])
 
 @app.route('/activities', methods=['GET'])
+@cross_origin()
 def get_activities():
     try:
         # Create a cursor to perform database operations
@@ -77,6 +81,7 @@ def get_activities():
 
 ###### POST
 @app.route('/activities', methods=['POST'])
+@cross_origin()
 def add_message():
     try:
         # Get the JSON data from the request body
@@ -97,15 +102,54 @@ def add_message():
         cur.close()
 
         # Return a success response
-        return jsonify({'message': 'Message added successfully'})
+        return jsonify({'message': 'Activity added successfully'})
 
     except (psycopg2.Error, psycopg2.DatabaseError) as error:
-        print("Error adding message to PostgreSQL:", error)
+        print("Error adding activity to PostgreSQL:", error)
+
+    # Return an error response
+    return jsonify({'message': 'Failed to add activity'})
+
+##### DELETE
+@app.route('/activities/<int:id>', methods=['DELETE'])
+@cross_origin()
+def delete_activity_by_id(id):
+    cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    cur.execute("DELETE FROM activities WHERE ID = %s", (id,))
+    conn.commit()
+    return jsonify({'status': 'success', 'message': 'Activity deleted'}), 200
+
+##### UPDATE
+@app.route('/activities/<int:id>', methods=['UPDATE'])
+@cross_origin()
+def update_activity(id):
+    try:
+        # Get the JSON data from the request body
+        data = request.get_json()
+        print("DATA", data)
+
+        # Create a cursor to perform database operations
+        cur = conn.cursor()
+
+        # Execute the UPDATE query
+        cur.execute("UPDATE activities SET activity = %s, duration = %s, comment = %s, date = %s WHERE id = %s",
+                    (data['activity'], data['duration'], data['comment'], data['date'], id))
+
+        # Commit the transaction
+        conn.commit()
+
+        # Close the cursor
+        cur.close()
+
+        # Return a success response
+        return jsonify({'message': 'Message updated successfully'})
+
+    except (psycopg2.Error, psycopg2.DatabaseError) as error:
+        print("Error updating to PostgreSQL:", error)
 
     # Return an error response
     return jsonify({'message': 'Failed to add message'})
 
-
 if __name__ == '__main__':
-    app.run(port=5000, debug=True)
+    app.run(port=5000)
     conn.close()
