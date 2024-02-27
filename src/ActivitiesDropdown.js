@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import Dropdown from 'react-bootstrap/Dropdown';
-export default function ActivitiesDropdown() {
-    const [selectedActivity, setSelectedActivity] = useState('Aktivität');
+export default function ActivitiesDropdown({exercise = 'Aktivität'}) {
+    const [selectedActivity, setSelectedActivity] = useState(exercise);
 
     return (
         <Dropdown onSelect={(key) => setSelectedActivity(key)}>
