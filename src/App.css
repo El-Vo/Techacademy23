@@ -28,6 +28,22 @@
   color: #61dafb;
 }
 
+.spacer {
+  padding-top: 40px;
+}
+
+h2 {
+  font-size: 1.5rem;
+}
+
+.table-entry {
+margin-bottom: 0;
+}
+
+.row {
+  --bs-gutter-x:0;
+}
+
 @keyframes App-logo-spin {
   from {
     transform: rotate(0deg);
