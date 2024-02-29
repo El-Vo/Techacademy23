@@ -26,25 +26,25 @@ def get_activity_by_id(id):
     activity = cur.fetchone()
     cur.close()
     if activity is not None:
-        activity['duration'] = activity['duration'].strftime('%H:%M:%S')
+        activity['duration'] = activity['duration'].strftime('%H:%M')
         return jsonify(dict(activity))
     else:
         return jsonify({"error": "Activity not found"}), 404
 
 @app.route('/activities/<string:date>', methods=['GET'])
 @cross_origin()
-def get_activity_by_date(date):
+def get_activity_ids_by_date(date):
 
     date_obj = datetime.strptime(date, '%Y-%m-%d').date()
 
     try:
         cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
-        cur.execute("SELECT * FROM activities WHERE date = %s", (date_obj,))
+        cur.execute("SELECT id FROM activities WHERE date = %s", (date_obj,))
         activities = cur.fetchall()
         cur.close()
-        for activity in activities:
-            if isinstance(activity['duration'], time):
-                activity['duration'] = activity['duration'].strftime('%H:%M:%S')
+        #for activity in activities:
+        #    if isinstance(activity['duration'], time):
+        #        activity['duration'] = activity['duration'].strftime('%H:%M:%S')
         return jsonify([dict(activity) for activity in activities])
 
     except (psycopg2.Error, psycopg2.DatabaseError) as error:
@@ -132,8 +132,8 @@ def update_activity(id):
         cur = conn.cursor()
 
         # Execute the UPDATE query
-        cur.execute("UPDATE activities SET activity = %s, duration = %s, comment = %s, date = %s WHERE id = %s",
-                    (data['activity'], data['duration'], data['comment'], data['date'], id))
+        cur.execute("UPDATE activities SET activity = %s, duration = %s, comment = %s WHERE id = %s",
+                    (data['activity'], data['duration'], data['comment'], id))
 
         # Commit the transaction
         conn.commit()

@@ -44,6 +44,12 @@ margin-bottom: 0;
   --bs-gutter-x:0;
 }
 
+p {
+  font-size:18px;
+  margin-top:0;
+  margin-bottom:0;
+}
+
 @keyframes App-logo-spin {
   from {
     transform: rotate(0deg);

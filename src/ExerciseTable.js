@@ -32,7 +32,7 @@ export default function ExerciseTable({queriedDate}) {
                 if (activityArray.length) {
                     for (let activity of activityArray) {
                         console.log(activity);
-                        entryArray = [...entryArray,  <ExerciseEntry key={activity.id} activity={activity} setTableEntries={displayCurrentEntries} />];
+                        entryArray = [...entryArray,  <ExerciseEntry key={activity.id} id={activity.id}/>];
                     }
                     setTableEntries(entryArray);
                 } else {
