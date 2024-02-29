@@ -1,18 +1,18 @@
 import ExerciseEntry from "./ExerciseEntry";
 import {Button} from "react-bootstrap";
 import {useEffect, useState} from 'react';
-export default function ExerciseTable() {
+
+export default function ExerciseTable({queriedDate}) {
     const [tableEntries, setTableEntries] = useState([]);
 
    function addNewEntry() {
-       let currentDate = new Date().toISOString().slice(0, 10);
        fetch("http://localhost:5000/activities", {
            method: "POST",
            body: JSON.stringify({
                activity:'Aktivität',
                duration:'00:00:00',
                comment:'',
-               date:currentDate
+               date:queriedDate
            }),
            headers: {
                "Content-type": "application/json; charset=UTF-8"
@@ -23,9 +23,10 @@ export default function ExerciseTable() {
 
     function displayCurrentEntries() {
         let entryArray = [];
+        console.log(queriedDate)
 
         //Load existing exercise entries from the database. If none are found, the table remains empty.
-        fetch('http://localhost:5000/activities')
+        fetch('http://localhost:5000/activities/'+queriedDate)
             .then(response => response.json())
             .then(activityArray => {
                 if (activityArray.length) {
@@ -44,7 +45,7 @@ export default function ExerciseTable() {
 
     useEffect(() => {
         displayCurrentEntries();
-    }, []);
+    }, [queriedDate]);
 
 
     return(
