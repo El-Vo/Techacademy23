@@ -2,7 +2,7 @@ from flask import Flask, jsonify, request
 from flask_cors import CORS, cross_origin
 import psycopg2
 import psycopg2.extras
-from datetime import datetime, time
+from datetime import datetime
 
 app = Flask(__name__)
 CORS(app)
@@ -120,7 +120,7 @@ def delete_activity_by_id(id):
     return jsonify({'status': 'success', 'message': 'Activity deleted'}), 200
 
 ##### UPDATE
-@app.route('/activities/<int:id>', methods=['UPDATE'])
+@app.route('/activities/<int:id>', methods=['PUT'])
 @cross_origin()
 def update_activity(id):
     try:

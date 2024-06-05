@@ -43,7 +43,7 @@ export default function ExerciseEntry({id}) {
     function updateExistingEntryInDb() {
         const url = 'http://localhost:5000/activities/' + id
         fetch(url, {
-            method: "UPDATE",
+            method: "PUT",
             body: JSON.stringify({
                 activity: activity.activity,
                 duration: activity.duration,
