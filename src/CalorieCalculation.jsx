@@ -32,6 +32,8 @@ export default function CalorieCalculation({givenExercise = 'Aktivität', givenD
             case 'Breakdance':
                 calorieFactor = 7;
                 break;
+            default:
+                calorieFactor = 0;
         }
 
         const [hours, minutes] = duration.split(':').map(Number);

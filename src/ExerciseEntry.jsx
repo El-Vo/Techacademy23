@@ -2,11 +2,20 @@ import ActivitiesDropdown from './ActivitiesDropdown';
 import CalorieCalculation from './CalorieCalculation';
 import {Button} from "react-bootstrap";
 import {useEffect, useState} from "react";
+import {getTrainingComment} from "./AiProseText";
 
 export default function ExerciseEntry({id}) {
 
     const [showEntry, setShowEntry] = useState(true);
     const [activity, setActivity] = useState({activity: 'Aktivität', duration: '05:45', comment: ''});
+
+    async function aiAutocomplete() {
+        let response = await getTrainingComment(activity.activity, activity.duration);
+        activity.comment = response[0].generated_text;
+        setActivity(activity);
+        updateExistingEntryInDb();
+        displayEntryValues();
+    }
 
     function deleteExistingEntry() {
         const url = 'http://localhost:5000/activities/' + id
@@ -70,7 +79,9 @@ export default function ExerciseEntry({id}) {
     if (showEntry) {
         return (
             <div className='row spacer'>
-                <div className='col-2'></div>
+                <div className='col-2 d-flex align-items-center justify-content-center'>
+                    <Button variant="secondary" onClick={aiAutocomplete}>✨ Ai ✨</Button>
+                </div>
                 <div className='col-2 d-flex align-items-center justify-content-center'>
                     <ActivitiesDropdown exercise={activity.activity} update={updateExercise}/>
                 </div>
