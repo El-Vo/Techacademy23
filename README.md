@@ -11,5 +11,3 @@ This project was created during the TechAcademy Web Dev Advanced Track 2023. It 
 
 Inside the db folder is a sql script which not only contains the table definition used for the project, it also encompasses
 example entries which can be used to demo the website.
-
-Hello World
